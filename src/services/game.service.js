@@ -1,11 +1,16 @@
 import Game from "../models/game.js"
 import Search from "../models/search.js";
+import User from "../models/user.js";
 
 const createService = (body) => Game.create(body);
 
 const findAllService = (offset, limit) => Game.find().sort({ _id: -1 }).skip(offset).limit(limit).populate("user");
 
 const countGame = () => Game.countDocuments();
+
+const findByIdGame = (id) => Game.findById(id);
+
+const findUserName = (id) => User.findById(id);
 
 const createSearchService = (body) => Search.create(body);
 
@@ -18,14 +23,14 @@ const createReviewService = async (
     text,
     score,
     userId,
+    userName
 ) => {
     const games = await Game.findOne({ _id: id });
-    console.log(games);
     const user = games.reviews.find((el) => el.userId === userId)
     if (user) {
         throw new Error("O usuario ja criou um review")
     }
-    games.reviews.push({ text, score, userId });
+    games.reviews.push({ text, score, userId, userName });
     const scoreAvg = games.reviews.reduce((total, next) => total + next.score, 0) / games.reviews.length;
     await Game.findOneAndUpdate(
         { _id: id },
@@ -33,4 +38,4 @@ const createReviewService = async (
     );
 }
 
-export { createService, findAllService, countGame, topTreeService, createReviewService, createSearchService, searchAllService };
+export { createService, findAllService, countGame, topTreeService, createReviewService, createSearchService, searchAllService, findByIdGame, findUserName };

@@ -1,4 +1,4 @@
-import { countGame, createReviewService, createSearchService, createService, findAllService, searchAllService, topTreeService } from "../services/game.service.js";
+import { countGame, createReviewService, createSearchService, createService, findAllService, searchAllService, topTreeService, findByIdGame, findUserName } from "../services/game.service.js";
 import { ObjectId } from "mongoose";
 
 const create = async (req, res) => {
@@ -114,12 +114,13 @@ const createReview = async (req, res) => {
                 message: "Preencha todos os campos para o cadastro do review."
             });
         }
-
+        const user = await findUserName(req.userId);
         await createReviewService(
             req.params._id,
             text,
             score,
-            req.userId
+            req.userId,
+            user.name
         );
         res.send(200)
     }
@@ -140,5 +141,17 @@ const searchAll = async (req, res) => {
     }
 }
 
+const findById = async (req, res) => {
+    try {
+        const game = await findByIdGame(req.params._id);
+        const userName = await findUserName (game)
+        res.send(game);
+    }
 
-export { create, findAll, topTree, createReview, searchAll };
+    catch (err) {
+        res.status(500).send({ message: err.message })
+    }
+};
+
+
+export { create, findAll, topTree, createReview, searchAll, findById};
