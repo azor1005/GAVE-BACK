@@ -8,6 +8,10 @@ const SearchSchema = new mongoose.Schema({
     developed: {
         type: String,
         require: true,
+    },
+    genre: {
+        type: String,
+        require: true,
     }
 });
 

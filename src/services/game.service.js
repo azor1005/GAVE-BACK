@@ -12,6 +12,10 @@ const findByIdGame = (id) => Game.findById(id);
 
 const findUserName = (id) => User.findById(id);
 
+const findGameFilter = (filter) => Game.find({
+    $or: [{"name": {$regex: new RegExp(filter, "i")}}, {"genre": {$regex: new RegExp(filter, "i")}}, {"developed": {$regex: new RegExp(filter, "i")}}]
+})
+
 const createSearchService = (body) => Search.create(body);
 
 const searchAllService = () => Search.find({});
@@ -38,4 +42,4 @@ const createReviewService = async (
     );
 }
 
-export { createService, findAllService, countGame, topTreeService, createReviewService, createSearchService, searchAllService, findByIdGame, findUserName };
+export { createService, findAllService, countGame, topTreeService, createReviewService, createSearchService, searchAllService, findByIdGame, findUserName, findGameFilter };

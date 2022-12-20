@@ -1,4 +1,4 @@
-import { countGame, createReviewService, createSearchService, createService, findAllService, searchAllService, topTreeService, findByIdGame, findUserName } from "../services/game.service.js";
+import { countGame, createReviewService, createSearchService, createService, findAllService, searchAllService, topTreeService, findByIdGame, findUserName, findGameFilter } from "../services/game.service.js";
 import { ObjectId } from "mongoose";
 
 const create = async (req, res) => {
@@ -24,6 +24,7 @@ const create = async (req, res) => {
         await createSearchService({
             name,
             developed,
+            genre
         })
 
         res.send(201);
@@ -133,8 +134,24 @@ const createReview = async (req, res) => {
 const searchAll = async (req, res) => {
 
     try{const search = await searchAllService();
-    res.send({
-        search
+        const name = search.map(value => value.name)
+        const developed = search.map(value=> value.developed)
+        const genre = search.map(value => value.genre)
+        let result = [] 
+        result = result.concat(name, developed, genre)
+        const removeDuplicates = (arr) => {
+            return arr.filter((item, 
+                index) => arr.indexOf(item) === index);
+        }
+        const newResult = removeDuplicates(result)
+        const finalResult = newResult.map(value => {
+            return {
+                label: value,
+            }
+        })
+        res.send({
+        
+        finalResult
     })}
     catch (err) {
         res.status(500).send({ message: err.message })
@@ -153,5 +170,14 @@ const findById = async (req, res) => {
     }
 };
 
+const findByFilter = async (req, res) => {
+    try {
+        const game = await findGameFilter(req.body.filter);
+        res.send(game);
+    } catch (error) {
+        res.status(500).send({ message: err.message })
+    }
+}
 
-export { create, findAll, topTree, createReview, searchAll, findById};
+
+export { create, findAll, topTree, createReview, searchAll, findById, findByFilter};
